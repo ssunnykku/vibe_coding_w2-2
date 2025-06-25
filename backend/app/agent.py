@@ -57,7 +57,7 @@ def search_products(query: Optional[str]) -> str:
         # 결과에서 마지막 메시지 내용 추출
         if result and "messages" in result and len(result["messages"]) > 0:
             last_message = result["messages"][-1]
-            return last_message.content
+            return last_message["content"]
         else:
             return "검색 결과를 가져올 수 없습니다."
             
