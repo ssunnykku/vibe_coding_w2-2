@@ -1,0 +1,36 @@
+name: PR Comment
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Add PR Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prComment = `👋 PR을 생성해주셔서 감사합니다!
+
+            ## 리뷰어를 위한 체크리스트
+            - [ ] 코드가 프로젝트 컨벤션을 따르는지 확인
+            - [ ] 테스트 코드가 적절히 작성되었는지 확인
+            - [ ] 변경사항이 명확히 설명되었는지 확인
+
+            ## 개발자를 위한 체크리스트
+            - [ ] 모든 테스트가 통과하는지 확인
+            - [ ] 불필요한 코드나 주석이 없는지 확인
+            - [ ] 코드 리뷰 피드백을 모두 반영했는지 확인
+
+            리뷰 과정에서 궁금한 점이 있다면 언제든 코멘트를 남겨주세요! 🚀`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: prComment
+            });

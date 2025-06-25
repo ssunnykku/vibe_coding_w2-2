@@ -1,0 +1,36 @@
+name: PR Labeler
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Add PR Labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = context.payload.pull_request.title;
+            const labels = [];
+
+            // 타입 라벨 추가
+            if (title.startsWith('[feat]')) labels.push('type/feature');
+            else if (title.startsWith('[fix]')) labels.push('type/bug');
+            else if (title.startsWith('[docs]')) labels.push('type/documentation');
+            else if (title.startsWith('[refactor]')) labels.push('type/enhancement');
+
+            // 상태 라벨 추가
+            labels.push('status/review-needed');
+
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: labels
+              });
+            }

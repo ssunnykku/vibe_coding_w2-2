@@ -1,0 +1,39 @@
+name: Issue Labeler
+
+on:
+  issues:
+    types: [opened, reopened]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Add Issue Labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = context.payload.issue.title;
+            const labels = [];
+
+            // 타입 라벨 추가
+            if (title.startsWith('[feature]')) labels.push('type/feature');
+            else if (title.startsWith('[bug]')) labels.push('type/bug');
+            else if (title.startsWith('[documentation]')) labels.push('type/documentation');
+            else if (title.startsWith('[enhancement]')) labels.push('type/enhancement');
+
+            // 우선순위 라벨 추가 (기본값: medium)
+            labels.push('priority/medium');
+
+            // 상태 라벨 추가
+            labels.push('status/in-progress');
+
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: labels
+              });
+            }

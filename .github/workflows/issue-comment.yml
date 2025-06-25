@@ -1,0 +1,39 @@
+name: Issue Comment
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Add Issue Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueComment = `👋 이슈를 생성해주셔서 감사합니다!
+
+            ## 이슈 처리 프로세스
+            1. 이슈 내용 검토
+            2. 담당자 할당
+            3. 우선순위 설정
+            4. 작업 진행
+            5. PR 생성 및 연결
+            6. 이슈 종료
+
+            ## 체크리스트
+            - [ ] 이슈의 목적이 명확한지 확인
+            - [ ] 필요한 라벨이 모두 추가되었는지 확인
+            - [ ] 관련 문서나 참고 자료가 있다면 추가
+
+            궁금한 점이 있다면 언제든 코멘트를 남겨주세요! 🌟`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: issueComment
+            });
